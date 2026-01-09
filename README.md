@@ -21,14 +21,25 @@ This project implements a **hierarchical scheduling system** designed to maximiz
 
 ## 🚀 Key Features
 
-- **Elastic Resource Allocation**: Dynamic GPU allocation between text and multimodal workloads
-- **Hierarchical Scheduling**: Two-level scheduling architecture for optimal resource management
-- **Modality-Aware Load Balancing**: Intelligent load balancing based on workload patterns
-- **Real-time Auto-scaling**: Automatic scaling based on demand and performance metrics
-- **Multi-GPU Support**: Efficient utilization of multiple GPU instances
-- **OpenAI-Compatible API**: Easy integration with existing applications
+- **Hierarchical Co-Scheduling:** The system achieves full-stack resource optimization from jobs down to operators through the co-design of the cluster-level utility scheduler (ExplSched) and the device-level kernel scheduler.
+- **Smart Scheduling for Exploratory Jobs:** The cluster scheduler intelligently allocates resources with the goal of maximizing training utility, significantly reducing GPU resource waste caused by the early termination of experimental tasks.
+- **Interference-Aware Fine-Grained Execution:** The device-level scheduler performs fine-grained control and orchestration of concurrently executing kernels on the GPU, strictly avoiding resource contention to ensure stable and efficient high-performance computing.
 
-## 🛠️ Installation
+
+## 🛠️ Technology Stack
+Core Languages: C++ (for high-performance scheduler and operator interception), Python (for high-level APIs and job submission).
+
+GPU Computing & Scheduling: CUDA Runtime/Driver API, cuBLAS, cuDNN (for kernel interception and execution).
+
+System Libraries: dlfcn (dlopen, dlsym for dynamic symbol loading and API redirection).
+
+Cluster Management (Optional Integration): Slurm, Kubernetes (for multi-node job deployment).
+
+Build Tools: CMake, GCC/Clang.
+
+
+
+Installation
 
 ### Prerequisites
 
