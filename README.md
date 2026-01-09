@@ -1,4 +1,4 @@
-# EEfficient Hierarchical Scheduler for Deep Learning Clusters
+# Efficient Hierarchical Scheduler for Deep Learning Clusters
 
 
 
@@ -27,134 +27,70 @@ This project implements a **hierarchical scheduling system** designed to maximiz
 
 
 ## 🛠️ Technology Stack
-Core Languages: C++ (for high-performance scheduler and operator interception), Python (for high-level APIs and job submission).
+**Core Languages:** C++ (for high-performance scheduler and operator interception), Python (for high-level APIs and job submission).
 
-GPU Computing & Scheduling: CUDA Runtime/Driver API, cuBLAS, cuDNN (for kernel interception and execution).
+**GPU Computing & Scheduling:** CUDA Runtime/Driver API, cuBLAS, cuDNN (for kernel interception and execution).
 
-System Libraries: dlfcn (dlopen, dlsym for dynamic symbol loading and API redirection).
+**System Libraries:** dlfcn (dlopen, dlsym for dynamic symbol loading and API redirection).
 
-Cluster Management (Optional Integration): Slurm, Kubernetes (for multi-node job deployment).
+**Cluster Management:** Slurm, Kubernetes (for multi-node job deployment).
 
-Build Tools: CMake, GCC/Clang.
+**Build Tools:** CMake, GCC/Clang.
 
 
+## 📥 Installation & Compilation
+Below are the brief steps to compile and install the project from source on a Linux system.
 
-Installation
-
-### Prerequisites
-
-- **Python**: 3.8 or higher
-- **CUDA**: 11.8 or higher (for GPU support)
-- **NCCL**: For multi-GPU communication (usually included with PyTorch)
-
-### Install from Source
+### Clone Repository & Prepare Environment
 
 ```bash
-# Clone the repository
-git clone https://github.com/CapitalLiu/ElasticMM.git
-cd ElasticMM
-
-# Install the package
-pip install -e .
-
-# Or install dependencies directly
-pip install -r requirements.txt
+git clone https://github.com/Hairui-Zhao/ExplSched.git
+cd explsched
 ```
 
-## 🚀 Quick Start
-
-### Step 1: System Calibration (Recommended)
-
-Before running inference, we recommend calibrating the system parameters for your hardware configuration. This offline profiling step helps optimize performance for your specific GPU setup.
+### Install Dependencies & Build
 
 ```bash
-# Run calibration to profile your machine's parameters
-python examples/calibrate_gain_cost.py
+# Install essential system libraries like dlfcn (usually pre-installed).
+sudo apt-get update && sudo apt-get install -y build-essential cmake
+# Build the project using CMake.
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+make -j$(nproc)
 ```
 
-The calibration process will:
-- Profile GPU memory and compute capabilities
-- Measure KV cache transfer bandwidth
-- Calculate optimal resource allocation parameters
-- Generate configuration files for your hardware
+### Configure & Run
 
-**Note**: This step is optional but highly recommended for optimal performance.
-
-### Step 2: Simple Usage Example
-
-For a basic example demonstrating ElasticMM's core functionality:
-
-```bash
-python examples/simple_usage.py
 ```
-
-This example shows:
-- Basic system initialization
-- Request submission and processing
-- Output collection and handling
-
-### Step 3: Online Service with Dynamic Workload
-
-For a complete online service demonstration with dynamic request generation:
-
-```bash
-python examples/demo_with_workload.py
+bash
+# 1. Set the dynamic library path to ensure the system can find the WFM interception library.
+export LD_LIBRARY_PATH=$(pwd)/lib:$LD_LIBRARY_PATH
+# 2. Inject the WFM library via preloading to intercept CUDA calls.
+export LD_PRELOAD=$(pwd)/lib/libwfm_intercept.so
+# 3. Start the cluster scheduler daemon.
+./sbin/explsched_daemon --config ../conf/cluster_config.yaml
+# 4. Submit a sample job using the Python client.
+python ../examples/submit_exploratory_job.py
 ```
-
-This demo includes:
-- Full system deployment with proxy and scheduler
-- Dynamic request generation (text-only and multimodal)
-- Real-time load balancing and auto-scaling
-- Performance monitoring and statistics
-
-### System Requirements
-
-⚠️ **Important**: ElasticMM requires a minimum of **8 GPUs** to run with the default configuration (2 for text-only workloads + 6 for multimodal workloads).
-
-- **Minimum**: 8 GPUs
-- **Recommended**: 8+ GPUs with high-bandwidth interconnects (NVLink/InfiniBand) for optimal performance
-- **Memory**: Sufficient GPU memory for your target model (typically 20GB+ per GPU)
-
-## 🏗️ Architecture
-
-ElasticMM implements a hierarchical architecture with two main levels:
-
-1. **Modality Level**: Allocates GPU instances between text-only and multimodal workloads
-2. **Stage Level**: Manages encoding, prefill, and decoding stages within each modality group
-
-The system automatically balances resources based on real-time demand and performance metrics, ensuring optimal utilization across different workload types.
-
-## 📊 Performance
-
-- **High Throughput**: Optimized for maximum requests per second
-- **Low Latency**: Minimized time-to-first-token (TTFT)
-- **Efficient Resource Usage**: Dynamic allocation prevents resource waste
-- **Scalable**: Supports from single GPU to multi-node deployments
 
 
 ## 📄 License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+ArrayPipe is released under the **MIT License**.  Please see the `LICENSE` file for full details.
 
-- Built on top of [vLLM](https://github.com/vllm-project/vllm) for efficient LLM serving
-- Inspired by research in elastic computing and multimodal systems
-- Thanks to the open-source community for various dependencies
+
 
 ## 📚 Citation
 
-If you find ElasticMM useful in your research or production deployments, please cite our NeurIPS 2025 paper:
-
 ```
-@inproceedings{liu2025elasticmm,
-  title     = {ElasticMM: Efficient Multimodal LLMs Serving with Elastic Multimodal Parallelism},
-  author    = {Liu, Zedong and Cheng, Shenggan and Tan, Guangming and You, Yang and Tao, Dingwen},
-  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
-  year      = {2025},
-  url       = {https://arxiv.org/abs/2507.10069}
+@inproceedings{explsched2023,
+    title={ExplSched: Maximizing Deep Learning Cluster Efficiency for Exploratory Jobs},
+    author={Li, Hongliang and Zhao, Hairui and Xu, Zhewen and Li, Xiang and Xu, Haixiao},
+    booktitle={2023 IEEE International Conference on Cluster Computing (CLUSTER)},
+    year={2023},
+    pages={1-12},
+    doi={10.1109/CLUSTER52292.2023.00014}
 }
 ```
 
-
-**ElasticMM** - Making multimodal AI more efficient and accessible.
